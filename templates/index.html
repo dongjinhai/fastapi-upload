@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>xmind转excel工具[新版]</title>
+  <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css" />
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://unpkg.com/element-plus"></script>
+  <script src="https://unpkg.com/@element-plus/icons-vue"></script>
+</head>
+<body>
+  <div id="app">
+    <div class="title">注意: 当前使用的xmind转excel工具为新版工具</div>
+    <el-upload
+      ref="upload"
+      class="upload-demo"
+      action=""
+      v-model:file-list="fileList"
+      :limit="1"
+      :on-exceed="handleExceed"
+      :auto-upload="false"
+      :show-file-list="true"
+    >
+      <template #trigger>
+        <el-button type="primary">选择Xmind文件</el-button>
+      </template>
+      <el-button class="ml-3" type="success" @click="uploadFiles">
+        上传并下载结果
+      </el-button>
+      <template #tip>
+        <div class="el-upload__tip text-red">
+          限制一个文件, 新文件会自动覆盖老文件
+        </div>
+      </template>
+    </el-upload>
+  </div>
+</body>
+<script>
+  const app = Vue.createApp({
+    data() {
+      return {
+        fileList: []
+      }
+    },
+    methods: {
+      uploadFiles() {
+        var formData = new FormData()
+        formData.append('file', this.fileList[0].raw)
+        axios.post('/uploadxmindfile', formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        }).then(function(resp) {
+          console.log(resp)
+          alert('上传成功')
+          window.open('/downloadexcelfile?filename=' + 'xxx')
+        })
+        .catch(function(err) {
+          alert('上传文件失败' + err)
+        })
+      },
+      handleExceed(files) {
+        console.log(this.fileList)
+        console.log(files)
+        // upload.value!.clearFiles()
+        // const file = files[0] as UploadRawFile
+        // file.uid = genFileId()
+        // upload.value!.handleStart(file)
+
+      }
+    }
+  })
+  app.use(ElementPlus);
+  for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+  }
+  app.mount("#app");
+</script>
+<style>
+  .title {
+    text-align: center;
+    font-size: large;
+    font-weight: bold;
+  }
+</style>
+</html>
